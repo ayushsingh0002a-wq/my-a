@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Prediction Tool</title>
+  <style>
+    body { font-family: Arial; text-align: center; background: #111; color: white; }
+    button { padding: 12px 25px; font-size: 18px; background: orange; border: none; border-radius: 5px; }
+    #result { font-size: 24px; margin-top: 20px; }
+    #history { margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>🔥 Smart Prediction Tool</h1>
+
+<button onclick="getPrediction()">Predict</button>
+
+<div id="result"></div>
+
+<h3>Last Results:</h3>
+<div id="history"></div>
+
+<script>
+let history = [];
+
+async function getPrediction() {
+  const res = await fetch("https://my-a-umrm.onrender.com/predict");
+  const data = await res.json();
+
+  let resultText = data.prediction + " | " + data.number;
+
+  // Simple trend logic (avoid repeat 3 times)
+  if (history.length >= 2 &&
+      history[0] === history[1] &&
+      history[1] === data.prediction) {
+    resultText += " ⚠️ Trend Break";
+  }
+
+  document.getElementById("result").innerText = resultText;
+
+  history.unshift(data.prediction);
+  if (history.length > 5) history.pop();
+
+  document.getElementById("history").innerText = history.join(" , ");
+}
+</script>
+
+</body>
+</html>
